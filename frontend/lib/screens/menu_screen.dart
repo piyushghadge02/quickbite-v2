@@ -16,12 +16,12 @@ import '../state/catalog_notifier.dart'
     show MenuState;
 import '../state/providers.dart';
 import '../theme/app_theme.dart'
-    show AppColors, AppBreakpoints;
+    show AppColors;
 import '../widgets/error_view.dart';
 import '../widgets/money.dart'
     show formatMoney;
 import '../widgets/responsive.dart'
-    show ResponsiveCenter, TwoPane, PagedListView;
+    show ResponsiveCenter, TwoPane, PagedListView, AppBreakpoints;
 import 'cart_screen.dart';
 
 class MenuScreen extends ConsumerWidget {

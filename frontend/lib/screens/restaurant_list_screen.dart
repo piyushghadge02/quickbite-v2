@@ -360,7 +360,7 @@ class _RestaurantCard extends ConsumerWidget {
   const _RestaurantCard({required this.restaurant});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Semantics(
       button: true,
       label: 'Open menu for ${restaurant.name}',
