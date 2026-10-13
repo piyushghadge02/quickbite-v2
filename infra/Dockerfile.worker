@@ -1,0 +1,31 @@
+# QuickBite v2 — worker image (shared by all workers, the outbox
+# dispatcher and the retry scheduler).
+#
+# Same pinned base + deps as the API image. The CMD is overridden per
+# service in compose.yaml (command: [...]); this default runs the payment
+# worker so `docker run` without a command still does something sane.
+# procps is installed so compose healthchecks can pgrep the worker process.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Install system dependencies for psycopg (libpq) and health checks
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       libpq5 \
+       procps \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend ./backend
+COPY workers ./workers
+COPY migrations ./migrations
+COPY scripts ./scripts
+
+CMD ["python", "workers/payment_worker.py"]

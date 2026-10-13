@@ -1,0 +1,241 @@
+# QuickBite v2 — Docker Compose (development / demo stack).
+#
+#   export TMPDIR=~/workspace/quickbite-build/piptmp   # host /tmp is a tiny tmpfs
+#   cp .env.example .env                               # then edit secrets
+#   docker compose build
+#   docker compose up -d postgres rabbitmq
+#   # --- deliberate manual steps (NOT automatic startup commands) ---
+#   docker compose exec api alembic -c migrations/alembic.ini upgrade head
+#   docker compose exec api python scripts/seed.py
+#   # --- then bring up the pipeline ---
+#   docker compose up -d
+#
+# Scale payment workers horizontally (no fixed container_name, so this works):
+#   docker compose up -d --scale payment-worker=3
+#
+# Conventions:
+#  * all image tags PINNED (no `latest`)
+#  * named volumes for postgres + rabbitmq data
+#  * healthchecks + depends_on conditions (ordering alone is not readiness)
+#  * internal broker/DB ports are NOT published; only the management UI
+#    (bound to 127.0.0.1) and the API / web ports are exposed.
+
+name: quickbite-v2
+
+services:
+  postgres:
+    image: postgres:16.6
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-quickbite}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quickbite}
+      POSTGRES_DB: ${POSTGRES_DB:-quickbite}
+    volumes:
+      - qb_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-quickbite} -d ${POSTGRES_DB:-quickbite}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    # DB port stays internal: services reach it as `postgres:5432`.
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - qb_rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      # Management UI only, bound to localhost. AMQP 5672 stays internal.
+      - "127.0.0.1:${MGMT_PORT:-15672}:15672"
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      AMQP_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      API_HOST: "0.0.0.0"
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=5)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  payment-worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      AMQP_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      WORKER_SCRIPT: payment_worker.py
+    command: ["python", "workers/payment_worker.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f \"$$WORKER_SCRIPT\" > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  restaurant-worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      AMQP_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      WORKER_SCRIPT: restaurant_worker.py
+    command: ["python", "workers/restaurant_worker.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f \"$$WORKER_SCRIPT\" > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  delivery-worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      AMQP_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      WORKER_SCRIPT: delivery_worker.py
+    command: ["python", "workers/delivery_worker.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f \"$$WORKER_SCRIPT\" > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  notification-worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      AMQP_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      WORKER_SCRIPT: notification_worker.py
+    command: ["python", "workers/notification_worker.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f \"$$WORKER_SCRIPT\" > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  outbox-dispatcher:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      AMQP_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672/
+      WORKER_SCRIPT: backend/app/messaging/outbox.py
+    command: ["python", "backend/app/messaging/outbox.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f \"$$WORKER_SCRIPT\" > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  retry-scheduler:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-quickbite}:${POSTGRES_PASSWORD:-quickbite}@postgres:5432/${POSTGRES_DB:-quickbite}
+      WORKER_SCRIPT: retry_scheduler.py
+    command: ["python", "workers/retry_scheduler.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f \"$$WORKER_SCRIPT\" > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  web:
+    # nginx serving the Flutter web build (built by the frontend track:
+    # `flutter build web` -> frontend/build/web). SPA deep-link fallback
+    # in infra/nginx.conf; /api/ reverse-proxied to the api service.
+    image: nginx:1.27.3-alpine
+    volumes:
+      - ./frontend/build/web:/usr/share/nginx/html:ro
+      - ./infra/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  qb_pgdata:
+  qb_rabbitmq_data:

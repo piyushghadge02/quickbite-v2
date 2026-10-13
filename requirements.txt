@@ -1,0 +1,15 @@
+# QuickBite v2 — pinned direct dependencies (API + workers + tests).
+# Full transitive lock: requirements.lock
+fastapi==0.143.0
+uvicorn==0.54.0
+sqlalchemy==2.1.4
+alembic==1.20.0
+psycopg[binary]>=3.2,<4
+aio-pika==10.1.1
+pydantic==2.14.1
+PyJWT==2.15.1
+bcrypt==5.0.0
+pytest==9.1.1
+pytest-asyncio==1.4.0
+httpx==0.28.1
+matplotlib==3.11.2

@@ -1,0 +1,32 @@
+# QuickBite v2 — API image.
+#
+# PINNED base: python:3.12-slim. Installs the pinned requirements.txt,
+# then the backend code. Migrations run automatically on container start.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Install system dependencies for psycopg (libpq) and health checks
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       libpq5 \
+       curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend ./backend
+COPY migrations ./migrations
+COPY scripts ./scripts
+COPY workers ./workers
+COPY infra/entrypoint.api.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]
