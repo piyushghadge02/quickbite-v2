@@ -1,0 +1,73 @@
+[1mdiff --git a/frontend/lib/screens/menu_screen.dart b/frontend/lib/screens/menu_screen.dart[m
+[1mindex 17c0324..c9bba51 100644[m
+[1m--- a/frontend/lib/screens/menu_screen.dart[m
+[1m+++ b/frontend/lib/screens/menu_screen.dart[m
+[36m@@ -81,25 +81,18 @@[m [mclass MenuScreen extends ConsumerWidget {[m
+         ),[m
+       );[m
+     }[m
+[31m-    return Column([m
+[31m-      children: [[m
+[31m-        RefreshIndicator([m
+[31m-          onRefresh: () =>[m
+[31m-              ref.read(menuProvider(restaurant.id).notifier).refresh(),[m
+[31m-          child: PagedListView([m
+[31m-            itemCount: menu.items.length,[m
+[31m-            isLoadingMore: menu.isLoadingMore,[m
+[31m-            hasMore: menu.hasMore,[m
+[31m-            onLoadMore: () =>[m
+[31m-                ref.read(menuProvider(restaurant.id).notifier).loadMore(),[m
+[31m-            itemBuilder: (context, index) {[m
+[31m-              final item = menu.items[index];[m
+[31m-              return _MenuItemCard(item: item, restaurant: restaurant);[m
+[31m-            },[m
+[31m-          ),[m
+[31m-        ),[m
+[31m-        const SizedBox(height: 100), // Space for bottom button[m
+[31m-      ],[m
+[32m+[m[32m    return PagedListView([m
+[32m+[m[32m      itemCount: menu.items.length,[m
+[32m+[m[32m      isLoadingMore: menu.isLoadingMore,[m
+[32m+[m[32m      hasMore: menu.hasMore,[m
+[32m+[m[32m      onLoadMore: () =>[m
+[32m+[m[32m          ref.read(menuProvider(restaurant.id).notifier).loadMore(),[m
+[32m+[m[32m      itemBuilder: (context, index) {[m
+[32m+[m[32m        final item = menu.items[index];[m
+[32m+[m[32m        return _MenuItemCard(item: item, restaurant: restaurant);[m
+[32m+[m[32m      },[m
+[32m+[m[32m      shrinkWrap: true,[m
+[32m+[m[32m      physics: const NeverScrollableScrollPhysics(),[m
+     );[m
+   }[m
+ }[m
+[1mdiff --git a/frontend/lib/widgets/responsive.dart b/frontend/lib/widgets/responsive.dart[m
+[1mindex 14fa1d1..38bb726 100644[m
+[1m--- a/frontend/lib/widgets/responsive.dart[m
+[1m+++ b/frontend/lib/widgets/responsive.dart[m
+[36m@@ -101,6 +101,8 @@[m [mclass PagedListView extends StatelessWidget {[m
+   final bool hasMore;[m
+   final VoidCallback onLoadMore;[m
+   final Widget? emptyWidget;[m
+[32m+[m[32m  final bool shrinkWrap;[m
+[32m+[m[32m  final ScrollPhysics? physics;[m
+ [m
+   const PagedListView({[m
+     super.key,[m
+[36m@@ -110,6 +112,8 @@[m [mclass PagedListView extends StatelessWidget {[m
+     required this.hasMore,[m
+     required this.onLoadMore,[m
+     this.emptyWidget,[m
+[32m+[m[32m    this.shrinkWrap = false,[m
+[32m+[m[32m    this.physics,[m
+   });[m
+ [m
+   @override[m
+[36m@@ -128,6 +132,8 @@[m [mclass PagedListView extends StatelessWidget {[m
+         return false;[m
+       },[m
+       child: ListView.builder([m
+[32m+[m[32m        shrinkWrap: shrinkWrap,[m
+[32m+[m[32m        physics: physics,[m
+         itemCount: itemCount + (isLoadingMore ? 1 : 0),[m
+         itemBuilder: (context, index) {[m
+           if (index >= itemCount) {[m
