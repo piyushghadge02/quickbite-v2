@@ -63,7 +63,7 @@ RESTAURANTS = [
         id="rest_crust",
         name="Crust & Co.",
         address="7 Park Street, Bengaluru",
-        image_url="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop",
+        image_url="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop",
         cuisine="Italian",
         description="Wood-fired pizzas with artisanal toppings and hand-stretched dough. Also serving fresh pastas and antipasti.",
         rating=4.6,
@@ -93,7 +93,7 @@ RESTAURANTS = [
         id="rest_mexico",
         name="Casa Mexicana",
         address="15 Indiranagar, Bengaluru",
-        image_url="https://images.unsplash.com/photo-1551504326-3a8e5d0e8c1f?w=400&h=300&fit=crop",
+        image_url="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&h=300&fit=crop",
         cuisine="Mexican",
         description="Vibrant Mexican street food — tacos, burritos, quesadillas with house-made salsas and fresh guacamole.",
         rating=4.2,
@@ -133,7 +133,7 @@ RESTAURANTS = [
         id="rest_dosa",
         name="Dosa Plaza",
         address="41 Malleshwaram, Bengaluru",
-        image_url="https://images.unsplash.com/photo-1630383698234-2d6b6f8b6c3e?w=400&h=300&fit=crop",
+        image_url="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop",
         cuisine="South Indian",
         description="Crispy dosas, fluffy idlis, and filter coffee. 50+ dosa varieties from classic masala to creative fusion.",
         rating=4.6,
@@ -148,6 +148,77 @@ RESTAURANTS = [
         description="Succulent kebabs marinated overnight and grilled to perfection. Served with roomali roti and mint chutney.",
         rating=4.5,
         delivery_time_minutes=35,
+    ),
+    # --- Additional restaurants to reach 18 ---
+    dict(
+        id="rest_pho88",
+        name="Pho 88",
+        address="12 Church Street, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=300&fit=crop",
+        cuisine="Vietnamese",
+        description="Authentic Vietnamese pho, fresh spring rolls, and banh mi. Slow-simmered broth with aromatic herbs.",
+        rating=4.6,
+        delivery_time_minutes=30,
+    ),
+    dict(
+        id="rest_seoul",
+        name="Seoul Kitchen",
+        address="88 Brigade Road, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop",
+        cuisine="Korean",
+        description="Korean BBQ, bibimbap, and kimchi stew. Traditional flavors with premium ingredients.",
+        rating=4.5,
+        delivery_time_minutes=35,
+    ),
+    dict(
+        id="rest_olive",
+        name="Olive Garden Bistro",
+        address="25 Indiranagar, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
+        cuisine="Mediterranean",
+        description="Fresh Mediterranean cuisine with hummus, falafel, grilled meats, and vibrant salads.",
+        rating=4.4,
+        delivery_time_minutes=28,
+    ),
+    dict(
+        id="rest_french",
+        name="Le Petit Bistro",
+        address="12 Lavelle Road, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&h=300&fit=crop",
+        cuisine="French",
+        description="Classic French bistro fare — onion soup, coq au vin, duck confit, and crème brûlée.",
+        rating=4.7,
+        delivery_time_minutes=40,
+    ),
+    dict(
+        id="rest_ocean",
+        name="Ocean Catch",
+        address="45 Ulsoor Lake, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=400&h=300&fit=crop",
+        cuisine="Seafood",
+        description="Fresh coastal seafood — grilled fish, prawn curry, crab masala, and calamari.",
+        rating=4.5,
+        delivery_time_minutes=35,
+    ),
+    dict(
+        id="rest_athens",
+        name="Athens Grill",
+        address="33 Koramangala, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1574484284002-952d92456975?w=400&h=300&fit=crop",
+        cuisine="Greek",
+        description="Authentic Greek taverna — souvlaki, moussaka, spanakopita, and baklava.",
+        rating=4.6,
+        delivery_time_minutes=30,
+    ),
+    dict(
+        id="rest_prime",
+        name="Prime Cut Steakhouse",
+        address="100 MG Road, Bengaluru",
+        image_url="https://images.unsplash.com/photo-1558030006-450675393462?w=400&h=300&fit=crop",
+        cuisine="Steakhouse",
+        description="Premium cuts — ribeye, filet mignon, T-bone with classic sides and sauces.",
+        rating=4.7,
+        delivery_time_minutes=40,
     ),
 ]
 
@@ -233,6 +304,104 @@ MENU = [
     ("item_paneer_kebab", "rest_kebab", "Paneer Tikka Kebab", 12000, True),
     ("item_roomali", "rest_kebab", "Roomali Roti (2 pc)", 800, True),
     ("item_biryani_kebab", "rest_kebab", "Kebab Biryani", 15000, True),
+    ("item_kebab_platter_mixed", "rest_kebab", "Mixed Kebab Platter", 22000, True),
+    ("item_mutton_kebab", "rest_kebab", "Mutton Galouti Kebab", 18000, True),
+
+    # Pho 88 - Vietnamese
+    ("item_pho_bo", "rest_pho88", "Pho Bo (Beef Noodle Soup)", 14000, True),
+    ("item_pho_ga", "rest_pho88", "Pho Ga (Chicken Noodle Soup)", 13000, True),
+    ("item_spring_rolls", "rest_pho88", "Fresh Spring Rolls (4 pc)", 8000, True),
+    ("item_banh_mi", "rest_pho88", "Banh Mi (Grilled Pork)", 11000, True),
+    ("item_bun_cha", "rest_pho88", "Bun Cha (Grilled Pork Noodles)", 15000, True),
+    ("item_goi_cuon", "rest_pho88", "Goi Cuon (Shrimp Spring Rolls)", 9000, True),
+    ("item_ca_phe", "rest_pho88", "Vietnamese Iced Coffee", 4000, True),
+
+    # Seoul Kitchen - Korean
+    ("item_bibimbap", "rest_seoul", "Bibimbap (Mixed Rice Bowl)", 16000, True),
+    ("item_kimchi_jjigae", "rest_seoul", "Kimchi Jjigae (Stew)", 14000, True),
+    ("item_bulgogi", "rest_seoul", "Bulgogi (Marinated Beef)", 18000, True),
+    ("item_samgyeopsal", "rest_seoul", "Samgyeopsal (Pork Belly)", 20000, True),
+    ("item_japchae", "rest_seoul", "Japchae (Stir-fried Noodles)", 13000, True),
+    ("item_korean_fried_chicken", "rest_seoul", "Korean Fried Chicken", 16000, True),
+    ("item_bingsu", "rest_seoul", "Patbingsu (Shaved Ice Dessert)", 10000, True),
+
+    # Olive Garden Bistro - Mediterranean
+    ("item_hummus_platter", "rest_olive", "Hummus Platter with Pita", 10000, True),
+    ("item_falafel_wrap", "rest_olive", "Falafel Wrap", 12000, True),
+    ("item_shawarma", "rest_olive", "Chicken Shawarma Plate", 15000, True),
+    ("item_grilled_halloumi", "rest_olive", "Grilled Halloumi Salad", 13000, True),
+    ("item_lamb_kofta", "rest_olive", "Lamb Kofta Skewers", 17000, True),
+    ("item_baklava", "rest_olive", "Baklava (4 pc)", 8000, True),
+    ("item_tzatziki", "rest_olive", "Tzatziki with Warm Bread", 6000, True),
+
+    # Le Petit Bistro - French
+    ("item_onion_soup", "rest_french", "French Onion Soup", 9000, True),
+    ("item_coq_au_vin", "rest_french", "Coq au Vin", 22000, True),
+    ("item_duck_confit", "rest_french", "Duck Confit", 25000, True),
+    ("item_steak_frites", "rest_french", "Steak Frites", 28000, True),
+    ("item_ratatouille", "rest_french", "Ratatouille", 14000, True),
+    ("item_creme_brulee", "rest_french", "Crème Brûlée", 9000, True),
+    ("item_cheese_plate", "rest_french", "French Cheese Plate", 15000, True),
+
+    # Ocean Catch - Seafood
+    ("item_grilled_fish", "rest_ocean", "Grilled Whole Fish", 25000, True),
+    ("item_prawn_curry", "rest_ocean", "Prawn Curry with Rice", 20000, True),
+    ("item_crab_masala", "rest_ocean", "Crab Masala", 22000, True),
+    ("item_calamari", "rest_ocean", "Crispy Calamari", 14000, True),
+    ("item_fish_tacos", "rest_ocean", "Fish Tacos (3 pc)", 16000, True),
+    ("item_lobster_thermidor", "rest_ocean", "Lobster Thermidor", 35000, True),
+    ("item_seafood_platter", "rest_ocean", "Mixed Seafood Platter", 30000, True),
+
+    # Athens Grill - Greek
+    ("item_souvlaki", "rest_athens", "Chicken Souvlaki (2 skewers)", 14000, True),
+    ("item_moussaka", "rest_athens", "Moussaka", 18000, True),
+    ("item_spanakopita", "rest_athens", "Spanakopita (Spinach Pie)", 12000, True),
+    ("item_gyro_wrap", "rest_athens", "Gyro Wrap (Lamb/Chicken)", 15000, True),
+    ("item_greek_salad", "rest_athens", "Greek Salad with Feta", 11000, True),
+    ("item_baklava_greek", "rest_athens", "Baklava (4 pc)", 8000, True),
+    ("item_loukoumades", "rest_athens", "Loukoumades (Honey Donuts)", 7000, True),
+
+    # Prime Cut Steakhouse - Steakhouse
+    ("item_ribeye", "rest_prime", "Ribeye Steak (300g)", 35000, True),
+    ("item_filet_mignon", "rest_prime", "Filet Mignon (250g)", 40000, True),
+    ("item_t_bone", "rest_prime", "T-Bone Steak (500g)", 45000, True),
+    ("item_ny_strip", "rest_prime", "New York Strip (300g)", 32000, True),
+    ("item_prime_rib", "rest_prime", "Prime Rib (400g)", 38000, True),
+    ("item_creamed_spinach", "rest_prime", "Creamed Spinach", 8000, True),
+    ("item_truffle_fries", "rest_prime", "Truffle Parmesan Fries", 10000, True),
+
+    # Additional items for restaurants with only 5 items
+    # Saffron Trail - Mughlai (add 2)
+    ("item_haleem", "rest_saffron", "Haleem", 16000, True),
+    ("item_phirni", "rest_saffron", "Phirni (Rice Pudding)", 7000, True),
+
+    # Tokyo Bites - Japanese (add 2)
+    ("item_unagi_don", "rest_tokyo", "Unagi Don (Eel Rice Bowl)", 22000, True),
+    ("item_matcha_icecream", "rest_tokyo", "Matcha Ice Cream", 7000, True),
+
+    # Green Bowl - Healthy (add 2)
+    ("item_acai_bowl", "rest_green", "Acai Bowl", 14000, True),
+    ("item_protein_smoothie", "rest_green", "Protein Power Smoothie", 9000, True),
+
+    # Burger Junction - American (add 2)
+    ("item_double_burger", "rest_burger", "Double Cheeseburger", 18000, True),
+    ("item_onion_rings", "rest_burger", "Crispy Onion Rings", 7000, True),
+
+    # Thai Orchid - Thai (add 2)
+    ("item_pad_see_ew", "rest_thai", "Pad See Ew", 14000, True),
+    ("item_coconut_icecream", "rest_thai", "Coconut Ice Cream", 7000, True),
+
+    # Casa Mexicana - Mexican (add 2)
+    ("item_encharitos", "rest_mexico", "Enchiladas (3 pc)", 15000, True),
+    ("item_guacamole", "rest_mexico", "Fresh Guacamole with Chips", 8000, True),
+
+    # Dosa Plaza - South Indian (add 2)
+    ("item_uttapam", "rest_dosa", "Vegetable Uttapam", 9000, True),
+    ("item_medu_vada", "rest_dosa", "Medu Vada (4 pc)", 7000, True),
+
+    # Kebab Kingdom - Kebabs (add 2)
+    ("item_kebab_platter_mixed_2", "rest_kebab", "Mixed Kebab Platter", 22000, True),
+    ("item_mutton_galouti_kebab", "rest_kebab", "Mutton Galouti Kebab", 18000, True),
 ]
 
 DRIVERS = [

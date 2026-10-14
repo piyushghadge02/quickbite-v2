@@ -3,6 +3,7 @@
 /// * invalid credentials (401 → INVALID_CREDENTIALS);
 /// * network error (timeout / unreachable) with a "Try again" action.
 /// Any other API error gets a generic banner.
+/// * demo login — one-click demo using seeded customer credentials.
 library;
 
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  static const _demoEmail = 'aarav@quickbite.test';
+  static const _demoPassword = 'customer123';
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -39,6 +43,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     ref.read(authProvider.notifier).signIn(
           email: _emailController.text,
           password: _passwordController.text,
+        );
+  }
+
+  Future<void> _demoLogin() async {
+    FocusScope.of(context).unfocus();
+    await ref.read(authProvider.notifier).signIn(
+          email: _demoEmail,
+          password: _demoPassword,
         );
   }
 
@@ -143,6 +155,29 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                                 ),
                               )
                             : const Text('Sign in'),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Semantics(
+                      button: true,
+                      label: isLoading ? 'Demo login in progress' : 'Demo login as customer',
+                      child: OutlinedButton.icon(
+                        onPressed: isLoading ? null : _demoLogin,
+                        icon: isLoading
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.verified_user_outlined),
+                        label: Text(isLoading ? 'Demo login...' : 'Demo Login'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(color: AppColors.orange, width: 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
