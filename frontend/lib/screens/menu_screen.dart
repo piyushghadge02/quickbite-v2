@@ -81,25 +81,18 @@ class MenuScreen extends ConsumerWidget {
         ),
       );
     }
-    return Column(
-      children: [
-        RefreshIndicator(
-          onRefresh: () =>
-              ref.read(menuProvider(restaurant.id).notifier).refresh(),
-          child: PagedListView(
-            itemCount: menu.items.length,
-            isLoadingMore: menu.isLoadingMore,
-            hasMore: menu.hasMore,
-            onLoadMore: () =>
-                ref.read(menuProvider(restaurant.id).notifier).loadMore(),
-            itemBuilder: (context, index) {
-              final item = menu.items[index];
-              return _MenuItemCard(item: item, restaurant: restaurant);
-            },
-          ),
-        ),
-        const SizedBox(height: 100), // Space for bottom button
-      ],
+    return PagedListView(
+      itemCount: menu.items.length,
+      isLoadingMore: menu.isLoadingMore,
+      hasMore: menu.hasMore,
+      onLoadMore: () =>
+          ref.read(menuProvider(restaurant.id).notifier).loadMore(),
+      itemBuilder: (context, index) {
+        final item = menu.items[index];
+        return _MenuItemCard(item: item, restaurant: restaurant);
+      },
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
     );
   }
 }

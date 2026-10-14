@@ -101,6 +101,8 @@ class PagedListView extends StatelessWidget {
   final bool hasMore;
   final VoidCallback onLoadMore;
   final Widget? emptyWidget;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
 
   const PagedListView({
     super.key,
@@ -110,6 +112,8 @@ class PagedListView extends StatelessWidget {
     required this.hasMore,
     required this.onLoadMore,
     this.emptyWidget,
+    this.shrinkWrap = false,
+    this.physics,
   });
 
   @override
@@ -128,6 +132,8 @@ class PagedListView extends StatelessWidget {
         return false;
       },
       child: ListView.builder(
+        shrinkWrap: shrinkWrap,
+        physics: physics,
         itemCount: itemCount + (isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index >= itemCount) {
